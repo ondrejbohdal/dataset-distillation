@@ -71,20 +71,24 @@ class Trainer(object):
 
     def get_steps(self):
         if self.state.shuffle == 'true' and (self.data[0] + 1).requires_grad:
-            data_cat = torch.cat(self.data)
-            labels_cat = torch.cat(self.labels)
-            perm = torch.randperm(data_cat.size(0))
-            shuffled_data = data_cat[perm]
-            shuffled_labels =  labels_cat[perm]
-            # reshape it back to the original shape
-            shuffled_data = shuffled_data.view(self.state.distill_steps, -1, shuffled_data.shape[1], shuffled_data.shape[2], shuffled_data.shape[3])
-            shuffled_labels =  shuffled_labels.view(self.state.distill_steps, -1)
-            shuffled_data_list = []
-            shuffled_labels_list = []
-            for step_i in range(self.state.distill_steps):
-                shuffled_data_list.append(shuffled_data[step_i])
-                shuffled_labels_list.append(shuffled_labels[step_i])
-            data_label_iterable = (x for _ in range(self.state.distill_epochs) for x in zip(shuffled_data_list, shuffled_labels_list))
+            perm = torch.randperm(self.state.distill_steps)
+            self.data = [self.data[int(i)] for i in perm]
+            self.labels = [self.labels[int(i)] for i in perm]
+            data_label_iterable = (x for _ in range(self.state.distill_epochs) for x in zip(self.data, self.labels))
+            # data_cat = torch.cat(self.data)
+            # labels_cat = torch.cat(self.labels)
+            # perm = torch.randperm(data_cat.size(0))
+            # shuffled_data = data_cat[perm]
+            # shuffled_labels =  labels_cat[perm]
+            # # reshape it back to the original shape
+            # shuffled_data = shuffled_data.view(self.state.distill_steps, -1, shuffled_data.shape[1], shuffled_data.shape[2], shuffled_data.shape[3])
+            # shuffled_labels =  shuffled_labels.view(self.state.distill_steps, -1)
+            # shuffled_data_list = []
+            # shuffled_labels_list = []
+            # for step_i in range(self.state.distill_steps):
+            #     shuffled_data_list.append(shuffled_data[step_i])
+            #     shuffled_labels_list.append(shuffled_labels[step_i])
+            # data_label_iterable = (x for _ in range(self.state.distill_epochs) for x in zip(shuffled_data_list, shuffled_labels_list))
         else:
             data_label_iterable = (x for _ in range(self.state.distill_epochs) for x in zip(self.data, self.labels))
         lrs = F.softplus(self.raw_distill_lrs).unbind()
@@ -187,8 +191,6 @@ class Trainer(object):
             bwd_out += list(lrs)
             bwd_grad += list(glrs)
             for d, g in zip(datas, gdatas):
-                if d.grad is None:
-                    d.grad = torch.zeros_like(d)
                 d.grad.add_(g)
         if len(bwd_out) > 0:
             torch.autograd.backward(bwd_out, bwd_grad)
