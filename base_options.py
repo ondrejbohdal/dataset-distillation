@@ -312,6 +312,8 @@ class BaseOptions(object):
                                  'be either MASTER_PORT & MASTER_ADDR, or INIT_FILE. '
                                  'Then it stores the values in state as "distributed_master_addr", '
                                  '"distributed_master_port", etc. Only rank 0 process writes checkpoints. ')
+        parser.add_argument('--shuffle', type=str, default='false',
+                            help='if to shuffle images across steps')
 
     def get_dummy_state(self, *cmdargs, yaml_file=None, **opt_pairs):
         if yaml_file is None:
