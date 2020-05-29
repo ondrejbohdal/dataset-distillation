@@ -116,6 +116,8 @@ class State(object):
             name += '_train({})'.format(opt.train_nets_type)
             if opt.dropout:
                 name += '_dropout'
+            if opt.shuffle == 'true':
+                name += '_shuffle'
             dirs = [opt.mode, opt.dataset, name]
         return os.path.join(opt.results_dir, *dirs)
 
