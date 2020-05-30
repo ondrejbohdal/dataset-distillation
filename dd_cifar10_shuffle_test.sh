@@ -25,4 +25,4 @@ export PYTHON_PATH=$PATH
 
 source /home/${STUDENT_ID}/miniconda3/bin/activate meta_learning_pytorch_env_2
 
-python main.py --mode distill_basic --dataset Cifar10 --arch AlexCifarNet --distill_lr 0.001 --shuffle true --phase test
+python main.py --mode distill_basic --dataset Cifar10 --arch AlexCifarNet --distill_lr 0.001 --shuffle true --phase test --test_n_nets 200

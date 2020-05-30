@@ -25,4 +25,4 @@ export PYTHON_PATH=$PATH
 
 source /home/${STUDENT_ID}/miniconda3/bin/activate meta_learning_pytorch_env_2
 
-python main.py --mode distill_basic --dataset MNIST --arch LeNet --phase test
+python main.py --mode distill_basic --dataset MNIST --arch LeNet --phase test --test_n_nets 200
