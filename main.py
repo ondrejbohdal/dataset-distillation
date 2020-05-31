@@ -150,14 +150,31 @@ def main(state):
                 state.test_optimize_n_nets,
                 state.test_n_runs))
             logging.info('')
-
             loaded_steps = load_results(state, device=state.device)  # loaded
 
             if state.test_distilled_images == 'loaded':
                 unique_data_label = [s[:-1] for s in loaded_steps[:state.distill_steps]]
 
                 def get_data_label(state):
-                    return [x for _ in range(state.distill_epochs) for x in unique_data_label]
+                    data_list = []
+                    label_list = []
+                    for step_i in range(state.distill_epochs):
+                        for step_ii in range(len(unique_data_label)):
+                            data_list.append(unique_data_label[step_ii][0])
+                            label_list.append(unique_data_label[step_ii][1])
+                    data_cat = torch.cat(data_list)
+                    labels_cat = torch.cat(label_list)
+                    perm = torch.randperm(data_cat.size(0))
+                    shuffled_data = data_cat[perm]
+                    shuffled_labels =  labels_cat[perm]
+                    hh = [x for _ in range(state.distill_epochs) for x in unique_data_label]
+                    shuffled_data = shuffled_data.view(state.distill_steps * state.distill_epochs, -1, shuffled_data.shape[1], shuffled_data.shape[2], shuffled_data.shape[3])
+                    shuffled_labels =  shuffled_labels.view(state.distill_steps * state.distill_epochs, -1)
+                    data_label_iterable = []
+                    for step_i in range(state.distill_steps * state.distill_epochs):
+                        data_label_iterable.append((shuffled_data[step_i], shuffled_labels[step_i]))
+                    return data_label_iterable
+                    # return [x for _ in range(state.distill_epochs) for x in unique_data_label]
 
             elif state.test_distilled_images == 'random_train':
                 get_data_label = utils.baselines.random_train
@@ -245,6 +262,7 @@ def main(state):
                     assert state.test_distill_epochs is None
 
                     def get_lrs(state):
+                        # TODO: modify the lrs returned by this
                         return tuple(s[-1] for s in loaded_steps)
 
                 elif lr_meth == 'fix':
@@ -345,12 +363,12 @@ def main(state):
                     @contextmanager
                     def seed(self, seed):
                         cpu_rng = torch.get_rng_state()
-                        cuda_rng = torch.cuda.get_rng_state(self.state.device)
+                        # cuda_rng = torch.cuda.get_rng_state(self.state.device)
                         torch.random.default_generator.manual_seed(seed)
-                        torch.cuda.manual_seed(seed)
+                        # torch.cuda.manual_seed(seed)
                         yield
                         torch.set_rng_state(cpu_rng)
-                        torch.cuda.set_rng_state(cuda_rng, self.state.device)
+                        # torch.cuda.set_rng_state(cuda_rng, self.state.device)
 
                     def num_steps(self):
                         return self.state.distill_steps * self.test_distill_epochs
