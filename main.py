@@ -156,23 +156,28 @@ def main(state):
                 unique_data_label = [s[:-1] for s in loaded_steps[:state.distill_steps]]
 
                 def get_data_label(state):
-                    data_list = []
-                    label_list = []
-                    for step_i in range(state.distill_epochs):
-                        for step_ii in range(len(unique_data_label)):
-                            data_list.append(unique_data_label[step_ii][0])
-                            label_list.append(unique_data_label[step_ii][1])
-                    data_cat = torch.cat(data_list)
-                    labels_cat = torch.cat(label_list)
-                    perm = torch.randperm(data_cat.size(0))
-                    shuffled_data = data_cat[perm]
-                    shuffled_labels =  labels_cat[perm]
-                    hh = [x for _ in range(state.distill_epochs) for x in unique_data_label]
-                    shuffled_data = shuffled_data.view(state.distill_steps * state.distill_epochs, -1, shuffled_data.shape[1], shuffled_data.shape[2], shuffled_data.shape[3])
-                    shuffled_labels =  shuffled_labels.view(state.distill_steps * state.distill_epochs, -1)
-                    data_label_iterable = []
-                    for step_i in range(state.distill_steps * state.distill_epochs):
-                        data_label_iterable.append((shuffled_data[step_i], shuffled_labels[step_i]))
+                    perm = torch.randperm(state.distill_steps)
+                    data_s = [unique_data_label[int(i)][0] for i in perm]
+                    labels_s = [unique_data_label[int(i)][1] for i in perm]
+                    data_label_iterable = (x for _ in range(state.distill_epochs) for x in zip(data_s, labels_s))
+                    # shuffle completely:
+                    # data_list = []
+                    # label_list = []
+                    # for step_i in range(state.distill_epochs):
+                    #     for step_ii in range(len(unique_data_label)):
+                    #         data_list.append(unique_data_label[step_ii][0])
+                    #         label_list.append(unique_data_label[step_ii][1])
+                    # data_cat = torch.cat(data_list)
+                    # labels_cat = torch.cat(label_list)
+                    # perm = torch.randperm(data_cat.size(0))
+                    # shuffled_data = data_cat[perm]
+                    # shuffled_labels =  labels_cat[perm]
+                    # hh = [x for _ in range(state.distill_epochs) for x in unique_data_label]
+                    # shuffled_data = shuffled_data.view(state.distill_steps * state.distill_epochs, -1, shuffled_data.shape[1], shuffled_data.shape[2], shuffled_data.shape[3])
+                    # shuffled_labels =  shuffled_labels.view(state.distill_steps * state.distill_epochs, -1)
+                    # data_label_iterable = []
+                    # for step_i in range(state.distill_steps * state.distill_epochs):
+                    #     data_label_iterable.append((shuffled_data[step_i], shuffled_labels[step_i]))
                     return data_label_iterable
                     # return [x for _ in range(state.distill_epochs) for x in unique_data_label]
 
