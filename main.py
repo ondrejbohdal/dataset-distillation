@@ -286,22 +286,24 @@ def main(state):
                     assert state.test_distill_epochs is None
 
                     def get_lrs(state):
-                        num_steps_use = 30  # 15, 20, 25, 30
-                        current_step_i = 1
-                        lrs_list = []
-                        for s in loaded_steps:
-                            if current_step_i > num_steps_use:
-                                lrs_list.append(s[-1] * 0)
-                            else:
-                                lrs_list.append(s[-1])
-                            current_step_i += 1
-                        return tuple(lrs_list)
+                        # # use different numbers of steps
+                        # num_steps_use = 30  # 15, 20, 25, 30
+                        # current_step_i = 1
+                        # lrs_list = []
+                        # for s in loaded_steps:
+                        #     if current_step_i > num_steps_use:
+                        #         lrs_list.append(s[-1] * 0)
+                        #     else:
+                        #         lrs_list.append(s[-1])
+                        #     current_step_i += 1
+                        # return tuple(lrs_list)
+                        # # use an average of the optimized learning rates as the learning rate
                         # print('Meta-learned learning rates:')
                         # print(tuple(s[-1] for s in loaded_steps))
                         # num_steps = len(loaded_steps)
                         # avg_step = sum(tuple(s[-1] for s in loaded_steps)) / num_steps
                         # return tuple(avg_step for s in loaded_steps)
-                        # return tuple(s[-1] for s in loaded_steps)
+                        return tuple(s[-1] for s in loaded_steps)
 
                 elif lr_meth == 'fix':
                     val = float(state.test_distilled_lrs[1])
