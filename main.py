@@ -286,7 +286,7 @@ def main(state):
                     assert state.test_distill_epochs is None
 
                     def get_lrs(state):
-                        num_steps_use = 20  # 15, 20, 25, 30
+                        num_steps_use = 25  # 15, 20, 25, 30
                         current_step_i = 1
                         lrs_list = []
                         for s in loaded_steps:
