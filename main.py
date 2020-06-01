@@ -157,22 +157,22 @@ def main(state):
 
                 def get_data_label(state):
                     # shuffle completely, but use each example in an epoch
-                    data_label_iterable = []
-                    for step_i in range(state.distill_epochs):
-                        data_list = []
-                        label_list = []
-                        for step_ii in range(len(unique_data_label)):
-                            data_list.append(unique_data_label[step_ii][0])
-                            label_list.append(unique_data_label[step_ii][1])
-                        data_cat = torch.cat(data_list)
-                        labels_cat = torch.cat(label_list)
-                        perm = torch.randperm(data_cat.size(0))
-                        shuffled_data = data_cat[perm]
-                        shuffled_labels =  labels_cat[perm]
-                        shuffled_data = shuffled_data.view(state.distill_steps, -1, shuffled_data.shape[1], shuffled_data.shape[2], shuffled_data.shape[3])
-                        shuffled_labels =  shuffled_labels.view(state.distill_steps, -1)
-                        for step_iii in range(state.distill_steps):
-                            data_label_iterable.append((shuffled_data[step_iii], shuffled_labels[step_iii]))
+                    # data_label_iterable = []
+                    # for step_i in range(state.distill_epochs):
+                    #     data_list = []
+                    #     label_list = []
+                    #     for step_ii in range(len(unique_data_label)):
+                    #         data_list.append(unique_data_label[step_ii][0])
+                    #         label_list.append(unique_data_label[step_ii][1])
+                    #     data_cat = torch.cat(data_list)
+                    #     labels_cat = torch.cat(label_list)
+                    #     perm = torch.randperm(data_cat.size(0))
+                    #     shuffled_data = data_cat[perm]
+                    #     shuffled_labels =  labels_cat[perm]
+                    #     shuffled_data = shuffled_data.view(state.distill_steps, -1, shuffled_data.shape[1], shuffled_data.shape[2], shuffled_data.shape[3])
+                    #     shuffled_labels =  shuffled_labels.view(state.distill_steps, -1)
+                    #     for step_iii in range(state.distill_steps):
+                    #         data_label_iterable.append((shuffled_data[step_iii], shuffled_labels[step_iii]))
                     # # Shuffle only whole steps and keep order of those steps the same in an epoch:
                     # perm = torch.randperm(state.distill_steps)
                     # data_s = [unique_data_label[int(i)][0] for i in perm]
@@ -197,8 +197,8 @@ def main(state):
                     # data_label_iterable = []
                     # for step_i in range(state.distill_steps * state.distill_epochs):
                     #     data_label_iterable.append((shuffled_data[step_i], shuffled_labels[step_i]))
-                    return data_label_iterable
-                    # return [x for _ in range(state.distill_epochs) for x in unique_data_label]
+                    # return data_label_iterable
+                    return [x for _ in range(state.distill_epochs) for x in unique_data_label]
 
             elif state.test_distilled_images == 'random_train':
                 get_data_label = utils.baselines.random_train
@@ -286,8 +286,12 @@ def main(state):
                     assert state.test_distill_epochs is None
 
                     def get_lrs(state):
-                        # TODO: modify the lrs returned by this
-                        return tuple(s[-1] for s in loaded_steps)
+                        print('Meta-learned learning rates:')
+                        print(tuple(s[-1] for s in loaded_steps))
+                        num_steps = len(loaded_steps)
+                        avg_step = sum(tuple(s[-1] for s in loaded_steps)) / num_steps
+                        return tuple(avg_step for s in loaded_steps)
+                        # return tuple(s[-1] for s in loaded_steps)
 
                 elif lr_meth == 'fix':
                     val = float(state.test_distilled_lrs[1])
