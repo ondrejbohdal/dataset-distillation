@@ -200,9 +200,9 @@ def main(state):
                     # return data_label_iterable
 
                     # when doing more epochs
-                    return [x for _ in range(4) for x in unique_data_label]
+                    # return [x for _ in range(4) for x in unique_data_label]
 
-                    # return [x for _ in range(state.distill_epochs) for x in unique_data_label]
+                    return [x for _ in range(state.distill_epochs) for x in unique_data_label]
 
             elif state.test_distilled_images == 'random_train':
                 get_data_label = utils.baselines.random_train
@@ -310,15 +310,15 @@ def main(state):
 
                         # if we do 4 epochs, then extend the lrs to use with avg lr
                         # calculate the avg lr
-                        num_steps = len(loaded_steps)
-                        avg_step = sum(tuple(s[-1] for s in loaded_steps)) / num_steps
+                        # num_steps = len(loaded_steps)
+                        # avg_step = sum(tuple(s[-1] for s in loaded_steps)) / num_steps
 
-                        orig_lr = list(s[-1] for s in loaded_steps)
-                        next_5_steps = [avg_step for i in range(5)]
-                        final_5_steps = [lr * 0 for lr in next_5_steps]
-                        return tuple(orig_lr + next_5_steps + final_5_steps)
+                        # orig_lr = list(s[-1] for s in loaded_steps)
+                        # next_5_steps = [avg_step for i in range(5)]
+                        # final_5_steps = [lr * 0 for lr in next_5_steps]
+                        # return tuple(orig_lr + next_5_steps + final_5_steps)
                         
-                        # return tuple(s[-1] for s in loaded_steps)
+                        return tuple(s[-1] for s in loaded_steps)
 
                 elif lr_meth == 'fix':
                     val = float(state.test_distilled_lrs[1])
@@ -402,13 +402,13 @@ def main(state):
                             self.test_distill_epochs = state.distill_epochs
                         else:
                             self.test_distill_epochs = state.test_distill_epochs
-                        # with state.pretend(distill_epochs=self.test_distill_epochs):
-                        with state.pretend(distill_epochs=4):
+                        # with state.pretend(distill_epochs=4):
+                        with state.pretend(distill_epochs=self.test_distill_epochs):
                             self.stepss = StepCollection(state)
 
                     def run(self, test_idx, test_at_steps=None):
-                        # with self.state.pretend(distill_epochs=self.test_distill_epochs):
-                        with self.state.pretend(distill_epochs=4):
+                        # with self.state.pretend(distill_epochs=4):
+                        with self.state.pretend(distill_epochs=self.test_distill_epochs):
                             steps = self.stepss[test_idx]  # before seeding!
                             with self.seed(self.state.seed + 1 + test_idx):
                                 return evaluate_steps(
@@ -428,8 +428,8 @@ def main(state):
                         # torch.cuda.set_rng_state(cuda_rng, self.state.device)
 
                     def num_steps(self):
-                        return self.state.distill_steps * 4
-                        # return self.state.distill_steps * self.test_distill_epochs
+                        # return self.state.distill_steps * 4
+                        return self.state.distill_steps * self.test_distill_epochs
 
             # run tests
             test_runner = TestRunner(state)
