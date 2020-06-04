@@ -115,7 +115,8 @@ def conv3x3(in_planes, out_planes, stride=1):
                      padding=1, bias=False)
 
 
-class BasicBlock(nn.Module):
+# class BasicBlock(nn.Module):
+class BasicBlock(utils.ReparamModule):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
@@ -148,7 +149,8 @@ class BasicBlock(nn.Module):
         return out
 
 
-class Bottleneck(nn.Module):
+# class Bottleneck(nn.Module):
+class Bottleneck(utils.ReparamModule):
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
@@ -213,7 +215,6 @@ class ResNet(utils.ReparamModule):
         self.layer2 = self._make_layer(block, 32, n, stride=2)
         self.layer3 = self._make_layer(block, 64, n, stride=2)
         self.avgpool = nn.AvgPool2d(8)
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels

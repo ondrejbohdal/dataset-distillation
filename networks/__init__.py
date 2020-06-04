@@ -9,7 +9,7 @@ def get_networks(state, N=None, arch=None):
     N = N or state.local_n_nets
     arch = arch or state.arch
     # arch = 'LeNet'
-    arch = 'ResNet'
+    # arch = 'ResNet'
     mod = sys.modules[__name__]
     cls = getattr(mod, arch)
     if state.input_size not in cls.supported_dims:
