@@ -1,5 +1,12 @@
 # Dataset Distillation
 
+## Modifications
+
+We have done modifications to the original code provided by the authors of Dataset Distillation. The changes analyse flexibility of the original dataset distillation, for example flexibility with respect to doing fewer or more steps, shuffling the order of examples, using an average of the optimized learning rates or changing the architecture. These experiments form a part of the analysis done in paper "Flexible Dataset Distillation: Learn Labels Instead of Images" [[arXiv](https://arxiv.org/abs/2006.08572) | [GitHub](https://github.com/ondrejbohdal/label-distillation)]. The corresponding changes are currently commented out, but they can be returned easily.
+
+
+## Previous Information
+
 <p align="center"><img src='docs/teaser.png' width=800></p>
 
 [Project Page](https://ssnl.github.io/dataset_distillation/) |  [Paper](https://arxiv.org/pdf/1811.10959.pdf)
