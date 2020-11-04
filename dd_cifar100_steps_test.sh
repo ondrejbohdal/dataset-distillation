@@ -41,7 +41,7 @@ echo "Job started: $dt"
 
 echo ${STEPS[SLURM_ARRAY_TASK_ID-1]}
 
-python main.py --mode distill_basic --dataset Cifar100 --arch AlexCifarNet --distill_lr 0.001 --distill_steps ${STEPS[SLURM_ARRAY_TASK_ID-1]} --phase test
+python main.py --mode distill_basic --dataset Cifar100 --arch AlexCifarNet --distill_lr 0.001 --distill_steps ${STEPS[SLURM_ARRAY_TASK_ID-1]} --phase test --test_n_nets 200
 
 dt=$(date '+%d/%m/%Y %H:%M:%S')
 echo "Training ended: $dt"
