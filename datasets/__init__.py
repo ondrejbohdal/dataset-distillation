@@ -15,6 +15,7 @@ default_dataset_roots = dict(
     SVHN='./data/svhn',
     USPS='./data/usps',
     Cifar10='./data/cifar10',
+    Cifar100='./data/cifar100',
     CUB200='./data/birds',
     PASCAL_VOC='./data/pascal_voc',
 )
@@ -27,6 +28,7 @@ dataset_normalization = dict(
     SVHN=((0.4379104971885681, 0.44398033618927, 0.4729299545288086),
           (0.19803012907505035, 0.2010156363248825, 0.19703614711761475)),
     Cifar10=((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
+    Cifar100=((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
     CUB200=((0.47850531339645386, 0.4992702007293701, 0.4022205173969269),
             (0.23210887610912323, 0.2277066558599472, 0.26652416586875916)),
     PASCAL_VOC=((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
@@ -40,6 +42,26 @@ dataset_labels = dict(
     SVHN=list(range(10)),
     Cifar10=('plane', 'car', 'bird', 'cat',
              'deer', 'dog', 'monkey', 'horse', 'ship', 'truck'),
+    Cifar100=('beaver', 'dolphin', 'otter', 'seal', 'whale',
+              'aquarium fish', 'flatfish', 'ray', 'shark', 'trout',
+              'orchids', 'poppies', 'roses', 'sunflowers', 'tulips',
+              'bottles', 'bowls', 'cans', 'cups', 'plates',
+              'apples', 'mushrooms', 'oranges', 'pears', 'sweet peppers',
+              'clock', 'computer keyboard', 'lamp', 'telephone', 'television',
+              'bed', 'chair', 'couch', 'table', 'wardrobe',
+              'bee', 'beetle', 'butterfly', 'caterpillar', 'cockroach',
+              'bear', 'leopard', 'lion', 'tiger', 'wolf',
+              'bridge', 'castle', 'house', 'road', 'skyscraper',
+              'cloud', 'forest', 'mountain', 'plain', 'sea',
+              'camel', 'cattle', 'chimpanzee', 'elephant', 'kangaroo',
+              'fox', 'porcupine', 'possum', 'raccoon', 'skunk',
+              'crab', 'lobster', 'snail', 'spider', 'worm',
+              'baby', 'boy', 'girl', 'man', 'woman',
+              'crocodile', 'dinosaur', 'lizard', 'snake', 'turtle',
+              'hamster', 'mouse', 'rabbit', 'shrew', 'squirrel',
+              'maple', 'oak', 'palm', 'pine', 'willow',
+              'bicycle', 'bus', 'motorcycle', 'pickup truck', 'train',
+              'lawn-mower', 'rocket', 'streetcar', 'tank', 'tractor')
     CUB200=caltech_ucsd_birds.class_labels,
     PASCAL_VOC=pascal_voc.object_categories,
 )
@@ -53,6 +75,7 @@ dataset_stats = dict(
     USPS=DatasetStats(1, 28, 10),
     SVHN=DatasetStats(3, 32, 10),
     Cifar10=DatasetStats(3, 32, 10),
+    Cifar100=DatasetStats(3, 32, 100),
     CUB200=DatasetStats(3, 224, 200),
     PASCAL_VOC=DatasetStats(3, 224, 20),
 )
@@ -150,6 +173,26 @@ def get_dataset(state, phase):
         ]
         with suppress_stdout():
             return datasets.CIFAR10(root, phase == 'train', transforms.Compose(transform_list), download=True)
+    elif name == 'Cifar100':
+        transform_list = []
+        if input_size != real_size:
+            transform_list += [
+                transforms.Resize([input_size, input_size], Image.BICUBIC),
+            ]
+        if phase == 'train':
+            transform_list += [
+                # TODO: merge the following into the padding options of
+                #       RandomCrop when a new torchvision version is released.
+                transforms.Pad(padding=4, padding_mode='reflect'),
+                transforms.RandomCrop(input_size),
+                transforms.RandomHorizontalFlip(),
+            ]
+        transform_list += [
+            transforms.ToTensor(),
+            transforms.Normalize(*normalization),
+        ]
+        with suppress_stdout():
+            return datasets.CIFAR100(root, phase == 'train', transforms.Compose(transform_list), download=True)
     elif name == 'CUB200':
         transform_list = []
         if phase == 'train':

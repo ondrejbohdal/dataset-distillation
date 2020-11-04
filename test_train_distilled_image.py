@@ -127,7 +127,7 @@ class TestDistilledImageTrainer(unittest.TestCase):
 
     @suppress_wranings
     def test_backward(self):
-        for ds, arch in (('MNIST', 'LeNet'), ('Cifar10', 'AlexCifarNet')):
+        for ds, arch in (('MNIST', 'LeNet'), ('Cifar10', 'AlexCifarNet'), ('Cifar100', 'AlexCifarNet')):
             args = dict(
                 dataset=ds, arch=arch,
                 distill_steps=4, distill_epochs=2, distill_lr=0.02
