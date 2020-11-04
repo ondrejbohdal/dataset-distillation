@@ -61,7 +61,7 @@ dataset_labels = dict(
               'hamster', 'mouse', 'rabbit', 'shrew', 'squirrel',
               'maple', 'oak', 'palm', 'pine', 'willow',
               'bicycle', 'bus', 'motorcycle', 'pickup truck', 'train',
-              'lawn-mower', 'rocket', 'streetcar', 'tank', 'tractor')
+              'lawn-mower', 'rocket', 'streetcar', 'tank', 'tractor'),
     CUB200=caltech_ucsd_birds.class_labels,
     PASCAL_VOC=pascal_voc.object_categories,
 )
